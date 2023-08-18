@@ -14,16 +14,16 @@ public class TANK {
 
     //实现tank上右下左移动
     public void W(){
-        this.y -= speed ;
+        if(y >0){ this.y -= speed ;}
     }
     public void D(){
-        this.x += speed;
+        if(x+60<1000){ this.x += speed;}
     }
     public void S(){
-        this.y += speed;
+        if(y+60<750){this.y += speed;}
     }
     public void A(){
-        this.x -= speed;
+        if(x > 0){this.x -= speed;}
     }
     public int getX() {
         return x;

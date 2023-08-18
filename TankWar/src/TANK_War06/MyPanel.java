@@ -131,6 +131,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                     Bomb bomb = new Bomb (e.getX(), e.getY());
                     vb.add(bomb);
                     //当子弹击中坦克,集合删除坦克
+                    et.remove(e);
 
                 }
                 break;

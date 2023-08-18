@@ -4,11 +4,9 @@ import javax.swing.*;
 
 public class TANK_window6 extends JFrame {
     MyPanel mp = null;
-
     public static void main(String[] args) {
         new TANK_window6();
     }
-
     public TANK_window6(){
         mp = new MyPanel();
         new Thread(mp).start();
