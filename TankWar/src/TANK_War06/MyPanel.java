@@ -40,7 +40,6 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
 
             //为了画出子弹，把子弹存入集合中  并启动
             et1.vb.add(bullet);
-
             new Thread(bullet).start();
            //加入
             et.add(et1);
@@ -54,58 +53,57 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        g.fillRect(0,0,1000,750);//坦克活动区域
-        drawtank(mt.getX(),mt.getY(),g,mt.getDirect(),0);//绘制我方tank
+        g.fillRect(0, 0, 1000, 750);//坦克活动区域
+        drawtank(mt.getX(), mt.getY(), g, mt.getDirect(), 0);//绘制我方tank
 
         //绘制我方坦克子弹，遍历集合中的子弹
-        for(int i = 0 ; i< mt.bullet.size();i++){
+        for (int i = 0; i < mt.bullet.size(); i++) {
             bullet shot = mt.bullet.get(i);
-            if(shot != null && shot.islive){
-                g.fillOval(mt.bullet.get(i).x,mt.bullet.get(i).y,10,10);
-            }else {
+            if (shot != null && shot.islive) {
+                g.fillOval(mt.bullet.get(i).x, mt.bullet.get(i).y, 10, 10);
+            } else {
                 mt.bullet.remove(shot);
             }
         }
 
         //坦克被击毁后，产生爆炸
-        for(int i = 0 ; i < vb.size() ; i++){
+        for (int i = 0; i < vb.size(); i++) {
             Bomb bo = vb.get(i);
-            if(bo.life > 6){
-                g.drawImage(image1,bo.x,bo.y,60,60,this);
+            if (bo.life > 6) {
+                g.drawImage(image1, bo.x, bo.y, 60, 60, this);
             } else if (bo.life > 3) {
-                g.drawImage(image2,bo.x,bo.y,60,60,this);
-            }else {
-                g.drawImage(image3,bo.x,bo.y,60,60,this);
+                g.drawImage(image2, bo.x, bo.y, 60, 60, this);
+            } else {
+                g.drawImage(image3, bo.x, bo.y, 60, 60, this);
             }
             bo.lifeDown();
             //当life为0 时，则在bo集合中删除
-            if(bo.life == 0) {
+            if (bo.life == 0) {
                 vb.remove(bo);
             }
         }
 
 
         //在paint画敌方坦克 和  子弹
-        for(int i = 0 ;i < et.size(); i++){
+        for (int i = 0; i < et.size(); i++) {
             //取出坦克
             Enemytank e = et.get(i);
-            if(e.islive){
-            drawtank(e.getX(),e.getY(),g,e.getDirect(),1);
-                for(int j = 0 ; j < e.vb.size() ; j++) {
-                //取出子弹
-                bullet b = e.vb.get(j);
-                //绘制子弹
+            if (e.islive) {
+                drawtank(e.getX(), e.getY(), g, e.getDirect(), 1);
+                for (int j = 0; j < e.vb.size(); j++) {
+                    //取出子弹
+                    bullet b = e.vb.get(j);
+                    //绘制子弹
                     if (b.islive) {
-                      g.setColor(Color.yellow);
-                      g.fillOval(b.x, b.y, 10, 10);
+                        g.setColor(Color.yellow);
+                        g.fillOval(b.x, b.y, 10, 10);
                     } else {
+                        //从Vector中删除
                         e.vb.remove(b);
                     }
-
                 }
             }
         }
-
     }
 
 
