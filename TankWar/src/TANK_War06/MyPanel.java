@@ -142,8 +142,6 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
 
     }
 
-
-
     public void drawtank(int x,int y, Graphics g, int direct,int type){
         switch (type){
             //画我方坦克
