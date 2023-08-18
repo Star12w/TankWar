@@ -16,7 +16,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
 
 //创建敌方坦克，用集合存
     Vector<Enemytank> et = new Vector<>(); // 敌方坦克集合
-    Vector<Bomb>  vb = new Vector<>();//敌方坦克爆炸集合
+    Vector<Bomb>  VB = new Vector<>();//敌方坦克爆炸集合
     //爆炸图片对象三个
     Image image1 = null;
     Image image2 = null;
@@ -54,37 +54,22 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     public void paint(Graphics g) {
         super.paint(g);
         g.fillRect(0, 0, 1000, 750);//坦克活动区域
-        drawtank(mt.getX(), mt.getY(), g, mt.getDirect(), 0);//绘制我方tank
 
-        //绘制我方坦克子弹，遍历集合中的子弹
-        for (int i = 0; i < mt.bullet.size(); i++) {
-            bullet shot = mt.bullet.get(i);
-            if (shot != null && shot.islive) {
-                g.fillOval(mt.bullet.get(i).x, mt.bullet.get(i).y, 10, 10);
-            } else {
-                mt.bullet.remove(shot);
-            }
-        }
+        //我方坦克 和  子弹
+       if(mt.islive) {
+           drawtank(mt.getX(), mt.getY(), g, mt.getDirect(), 0);//绘制我方tank
+           //绘制我方坦克子弹，遍历集合中的子弹
+           for (int i = 0; i < mt.bullet.size(); i++) {
+               bullet shot = mt.bullet.get(i);
+               if (shot != null && shot.islive) {
+                   g.fillOval(mt.bullet.get(i).x, mt.bullet.get(i).y, 10, 10);
+               } else {
+                   mt.bullet.remove(shot);
+               }
+           }
+       }
 
-        //坦克被击毁后，产生爆炸
-        for (int i = 0; i < vb.size(); i++) {
-            Bomb bo = vb.get(i);
-            if (bo.life > 6) {
-                g.drawImage(image1, bo.x, bo.y, 60, 60, this);
-            } else if (bo.life > 3) {
-                g.drawImage(image2, bo.x, bo.y, 60, 60, this);
-            } else {
-                g.drawImage(image3, bo.x, bo.y, 60, 60, this);
-            }
-            bo.lifeDown();
-            //当life为0 时，则在bo集合中删除
-            if (bo.life == 0) {
-                vb.remove(bo);
-            }
-        }
-
-
-        //在paint画敌方坦克 和  子弹
+        //敌方坦克 和  子弹
         for (int i = 0; i < et.size(); i++) {
             //取出坦克
             Enemytank e = et.get(i);
@@ -104,11 +89,28 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                 }
             }
         }
+
+        //坦克被击毁后，产生爆炸
+        for (int i = 0; i < VB.size(); i++) {
+            Bomb bo = VB.get(i);
+            if (bo.life > 6) {
+                g.drawImage(image1, bo.x, bo.y, 60, 60, this);
+            } else if (bo.life > 3) {
+                g.drawImage(image2, bo.x, bo.y, 60, 60, this);
+            } else {
+                g.drawImage(image3, bo.x, bo.y, 60, 60, this);
+            }
+            bo.lifeDown();
+            //当life为0 时，则在bo集合中删除
+            if (bo.life == 0) {
+                VB.remove(bo);
+            }
+        }
     }
 
 
     //判断我方子弹是否击中敌方坦克
-    public  void hitTank(bullet b, Enemytank e){
+    public  void hitTank(bullet b, TANK e){
         switch (e.getDirect()){
             case 0 ://0和2合并
             case 2 :
@@ -117,7 +119,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                     e.islive = false;
                     //当子弹击中坦克，产生爆炸效果
                     Bomb bomb = new Bomb (e.getX(), e.getY());
-                    vb.add(bomb);
+                    VB.add(bomb);
                     //当子弹击中坦克,集合删除坦克
                     et.remove(e);
                 }
@@ -129,7 +131,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                     e.islive = false;
                     //当子弹击中坦克，产生爆炸效果
                     Bomb bomb = new Bomb (e.getX(), e.getY());
-                    vb.add(bomb);
+                    VB.add(bomb);
                     //当子弹击中坦克,集合删除坦克
                     et.remove(e);
 
@@ -255,6 +257,17 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                 mt.bullet.remove(shot);
             }
         }
+        //遍历敌方子弹是否击中我方坦克
+
+            for(int i = 0; i < et.size();i++){
+                Enemytank e = et.get(i);
+                for(int j = 0 ; j<e.vb.size();j++){
+                    bullet b = e.vb.get(j);
+                    if(b != null && b.islive ){
+                        hitTank(b,mt);
+                    }
+                }
+            }
 
         this.repaint();
         }

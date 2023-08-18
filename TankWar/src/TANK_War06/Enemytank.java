@@ -4,7 +4,7 @@ import java.util.Vector;
 
 public class Enemytank extends TANK implements Runnable{
     Vector<bullet>  vb = new Vector<>();
-    public  boolean islive = true;
+
     public Enemytank(int x, int y) {
         super(x, y);
     }
