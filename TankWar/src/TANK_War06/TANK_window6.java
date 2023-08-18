@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class TANK_window6 extends JFrame {
     MyPanel mp = null;
-    public int a = 0;
+    public int a = 1;
     public static void main(String[] args) {
         new TANK_window6();
     }
