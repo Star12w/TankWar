@@ -55,15 +55,17 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
     public void paint(Graphics g) {
         super.paint(g);
         g.fillRect(0,0,1000,750);//坦克活动区域
-
         drawtank(mt.getX(),mt.getY(),g,mt.getDirect(),0);//绘制我方tank
-        //我方坦克子弹
-        if(mt.bullet1 != null  && mt.bullet1.islive) {
 
-            g.fillOval(mt.bullet1.x,mt.bullet1.y,10,10);
-
+        //绘制我方坦克子弹，遍历集合中的子弹
+        for(int i = 0 ; i< mt.bullet.size();i++){
+            bullet shot = mt.bullet.get(i);
+            if(shot != null && shot.islive){
+                g.fillOval(mt.bullet.get(i).x,mt.bullet.get(i).y,10,10);
+            }else {
+                mt.bullet.remove(shot);
+            }
         }
-
 
         //坦克被击毁后，产生爆炸
         for(int i = 0 ; i < vb.size() ; i++){
@@ -241,14 +243,21 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         }catch (InterruptedException e){
             e.printStackTrace();
         }
-        if(mt.bullet1 != null && mt.bullet1.islive){//当我的子弹还存活
-            //遍历敌人所有的坦克
-            for(int i = 0; i < et.size();i++){
-                Enemytank e = et.get(i);
-                hitTank(mt.bullet1, e);
-            }
+        //先遍历我方坦克发出的子弹并判断是否存活
+        //若存活，在遍历敌方坦克 ，并调用hittank看是否击中
+        for(int i = 0 ; i< mt.bullet.size();i++){
+            bullet shot = mt.bullet.get(i);
+            if( shot != null && shot.islive){
 
+                for(int j = 0; j < et.size();j++){
+                    Enemytank e = et.get(j);
+                    hitTank(shot, e);
+                }
+            }else {
+                mt.bullet.remove(shot);
+            }
         }
+
         this.repaint();
         }
     }

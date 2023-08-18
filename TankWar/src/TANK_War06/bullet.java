@@ -38,8 +38,6 @@ public class bullet implements Runnable{
                    x -= speed;
                    break;
            }
-
-           System.out.println("子弹 x= "+ x+" y = "+y);
            //当销毁和跑出界了，子弹就消失
            //当碰到敌方坦克时也应该结束线程
            if(!((x >= 0 && x<= 1000 && y>=0 && y<= 750) && islive)){
