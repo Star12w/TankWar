@@ -86,7 +86,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.png"));
 
         //音乐
-        new AePlayWave("src\\111.wav").start();
+        new AePlayWave("E:\\111.wav").start();
     }
 
     //编写方法，显示我方击毁敌方坦克数量
