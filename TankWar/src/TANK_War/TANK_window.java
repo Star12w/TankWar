@@ -5,14 +5,14 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Scanner;
 
-public class TANK_window6 extends JFrame {
+public class TANK_window extends JFrame {
     MyPanel mp = null;
      Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
 
-        new TANK_window6();
+        new TANK_window();
     }
-    public TANK_window6(){
+    public TANK_window(){
         System.out.println("请输入选择 1: 新游戏 2：继续上局游戏");
         String key = scanner.next();
         mp = new MyPanel(key);
