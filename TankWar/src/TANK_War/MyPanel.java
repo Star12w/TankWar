@@ -12,49 +12,97 @@ import java.util.Vector;
 //为了让panit不停的重绘子弹，需要将 MyPanel设置成线程子类Runnable
 public class MyPanel extends JPanel implements KeyListener,Runnable {
     MyTANK mt = null;
-
-
 //创建敌方坦克，用集合存
     Vector<Enemytank> et = new Vector<>(); // 敌方坦克集合
     Vector<Bomb>  VB = new Vector<>();//敌方坦克爆炸集合
+    //定义一个存放Nodes的Vector
+    Vector<Node> Vn = new Vector<>();
     //爆炸图片对象三个
     Image image1 = null;
     Image image2 = null;
     Image image3 = null;
     int es = 3;//坦克数量
-    public MyPanel(){
+    public MyPanel(String key){
         //初始化我方坦克
         //在构造器中创建我方坦克并设置speed
         mt = new MyTANK(100,100);
         mt.setSpeed(10);
 
-        //初始化敌方坦克
-        //1、在集合中先初始化创建三个敌方坦克
-        //2、在paint中画出来三个敌方坦克
-        for(int i = 0 ; i < es ; i++){
-            Enemytank et1 = new Enemytank((200*(i+1)),0);
-            et1.setDirect(2);
-            new Thread(et1).start();
-            //每个坦克添加子弹 并启动线程
-            bullet bullet = new bullet(et1.getX()+20,et1.getY()+60,et1.getDirect());
+        //获取敌方坦克集合
+        Recorder.setEnemytanks(et);
+        //恢复上局游戏数据，把Node传给Vn
+        Vn = Recorder.getNodesAndNum();
+        switch (key){
+            //开启新游戏
+            case "1" :
+                //初始化敌方坦克
+                //1、在集合中先初始化创建三个敌方坦克
+                //2、在paint中画出来三个敌方坦克
+                for(int i = 0 ; i < es ; i++){
+                    Enemytank et1 = new Enemytank((200*(i+1)),0);
+                    //将其他所有坦克集合et传给当前坦克中的集合
+                    et1.setVe(et);
+                    //设置初始方向
+                    et1.setDirect(2);
+                    //启动线程
+                    new Thread(et1).start();
+                    //每个坦克添加子弹 并启动线程
+                    bullet bullet = new bullet(et1.getX()+20,et1.getY()+60,et1.getDirect());
+                    //为了画出子弹，把子弹存入集合中  并启动
+                    et1.vb.add(bullet);
+                    new Thread(bullet).start();
+                    //将敌方坦克加入et集合中
+                    et.add(et1);
+                }
+                break;
+            case "2" :
+                //继续上局游戏
+                for(int i = 0 ; i < Vn.size() ; i++){
+                    Node node = Vn.get(i);
+                    Enemytank et1 = new Enemytank(node.getX(),node.getY());
+                    //将其他所有坦克集合et传给当前坦克中的集合
+                    et1.setVe(et);
+                    //设置初始方向
+                    et1.setDirect(node.getDirect());
+                    //启动线程
+                    new Thread(et1).start();
+                    //每个坦克添加子弹 并启动线程
+                    bullet bullet = new bullet(et1.getX()+20,et1.getY()+60,et1.getDirect());
 
-            //为了画出子弹，把子弹存入集合中  并启动
-            et1.vb.add(bullet);
-            new Thread(bullet).start();
-           //加入
-            et.add(et1);
+                    //为了画出子弹，把子弹存入集合中  并启动
+                    et1.vb.add(bullet);
+                    new Thread(bullet).start();
+                    //将敌方坦克加入et集合中
+                    et.add(et1);
+                }
+                break;
+            default:
+                System.out.println("您的输入有误...请重新输入");
         }
+
         //初始化爆炸图片对象
         image1 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_1.png"));
         image2 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_2.png"));
         image3 = Toolkit.getDefaultToolkit().getImage(Panel.class.getResource("/bomb_3.png"));
     }
 
+    //编写方法，显示我方击毁敌方坦克数量
+    public void showInfo(Graphics g){
+        //画出玩家的总成绩
+        g.setColor(Color.BLACK);//设置颜色
+        Font font = new Font("宋体", Font.BOLD, 20);//设置字体
+        g.setFont(font);//放置字体
+        g.drawString("您累计击毁敌方坦克",1020,30);//写字
+        drawtank(1020,60,g,0,1);
+        g.setColor(Color.BLACK);//重新设置黑色
+        g.drawString(Recorder.getAllEnemyTankNum()+" ",1080,100);
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         g.fillRect(0, 0, 1000, 750);//坦克活动区域
-
+        showInfo(g);
         //我方坦克 和  子弹
        if(mt.islive) {
            drawtank(mt.getX(), mt.getY(), g, mt.getDirect(), 0);//绘制我方tank
@@ -69,7 +117,7 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
            }
        }
 
-        //敌方坦克 和  子弹
+        //敌方坦克 和 子弹
         for (int i = 0; i < et.size(); i++) {
             //取出坦克
             Enemytank e = et.get(i);
@@ -114,14 +162,18 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
         switch (e.getDirect()){
             case 0 ://0和2合并
             case 2 :
-                if( b.x > e.getX() && b.x < e.getX()+ 40 && b.y > e.getY() &&b.y < e.getY()+60){
+                if( b.x > e.getX() && b.x < e.getX()+ 40 && b.y > e.getY() &&b.y < e.getY()+60) {
                     b.islive = false;
                     e.islive = false;
                     //当子弹击中坦克，产生爆炸效果
-                    Bomb bomb = new Bomb (e.getX(), e.getY());
+                    Bomb bomb = new Bomb(e.getX(), e.getY());
                     VB.add(bomb);
                     //当子弹击中坦克,集合删除坦克
                     et.remove(e);
+                    //Recorder中的allEnemyTankNum+1,用于记录击毁坦克数量
+                    if (e instanceof Enemytank) {
+                    Recorder.addallEnemyTankNum();
+                   }
                 }
                 break;
             case 1 :
@@ -134,7 +186,10 @@ public class MyPanel extends JPanel implements KeyListener,Runnable {
                     VB.add(bomb);
                     //当子弹击中坦克,集合删除坦克
                     et.remove(e);
-
+                    //Recorder中的allEnemyTankNum+1
+                    if (e instanceof Enemytank) {
+                        Recorder.addallEnemyTankNum();
+                    }
                 }
                 break;
 
