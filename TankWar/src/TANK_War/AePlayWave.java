@@ -7,7 +7,7 @@ import java.io.*;
  * @author ajun
  * Date 2021/7/16
  * @version 1.0
- * 播放音乐
+ * 播放坦克大战音乐
  */
 class AePlayWave extends Thread {
 
